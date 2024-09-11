@@ -59,7 +59,7 @@ Aqui está um exemplo do arquivo `config.json`:
   - `user`: Nome do usuário do banco de dados.
   - `password`: Senha do banco de dados.
   - `host`: Endereço do servidor onde o banco de dados está rodando.
-  
+
     **AVISO**: caso esteja usando docker, para descobrir seu host, basta executar o comando:
     ```
     docker inspect <container id> | grep "IPAddress"
@@ -84,17 +84,6 @@ Aqui está um exemplo do arquivo `config.json`:
 - **`analysis_config`**: Configurações para medir a performance de consultas.
   - `query_limit`: Limite de linhas a serem lidas ao medir a performance com o Pandas.
 
-### 2. Configuração do Banco de Dados
-
-Certifique-se de que o PostgreSQL esteja rodando e de que o banco de dados esteja acessível com as credenciais fornecidas no arquivo `config.json`.
-
-Você também deve criar um banco de dados com o nome especificado em `dbname`. No terminal, execute:
-
-```bash
-psql -U <seu_usuario> -c "CREATE DATABASE rasa;"
-```
-
-Substitua `<seu_usuario>` pelo nome do seu usuário PostgreSQL.
 
 ## Como Executar
 
