@@ -20,10 +20,12 @@ Antes de começar, você precisa ter as seguintes ferramentas instaladas:
   python3 -m venv .venv
   source .venv/bin/activate
   ```
+    ```bash
+  sudo apt-get install libpq-dev
+  ```
   ```bash
   pip install -r requirements.txt
   ```
-  
 
 ## Configuração
 
