@@ -16,15 +16,33 @@ Antes de começar, você precisa ter as seguintes ferramentas instaladas:
 - As dependências do projeto listadas no arquivo `requirements.txt`:
 
   **AVISO**: Recomendado criar um ambiente virtual antes de instalar as dependencias:
-  ```
+  ```bash
   python3 -m venv .venv
   source .venv/bin/activate
   ```
-    ```bash
+  ```bash
   sudo apt-get install libpq-dev
   ```
   ```bash
   pip install -r requirements.txt
+  ```
+
+#### PySpark
+
+  **Caso queira testar o PySpark, você precisa ter o Java instalado.**
+
+  Passos para instalar o Java no Linux:
+
+  1. Atualize os pacotes do sistema:
+
+  ```bash
+  sudo apt update
+  ```
+
+  2. Instale o Java Development Kit (JDK):
+
+  ```bash
+  sudo apt install default-jdk
   ```
 
 ## Configuração
