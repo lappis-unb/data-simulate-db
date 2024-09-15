@@ -1,4 +1,11 @@
 import sys
+import asyncio
+from performance import (
+    measure_performance_pandas,
+    measure_performance_psycopg2,
+    measure_performance_asyncpg,
+    measure_performance_pyspark
+)
 from db import (
     create_table,
     insert_simulated_data,
@@ -7,9 +14,7 @@ from db import (
     list_tables,
     count_rows_in_table,
 )
-from performance import measure_performance
 from db import load_config
-
 
 def print_menu():
     """Imprime o menu de opções"""
@@ -23,6 +28,15 @@ def print_menu():
     print("7. Contar registros em uma tabela específica")
     print("8. Sair")
 
+def select_tool():
+    """Mostra o submenu de seleção de ferramenta"""
+    print("\nEscolha a ferramenta para medir performance:")
+    print("1. pandas (SQLAlchemy)")
+    print("2. psycopg2")
+    print("3. asyncpg")
+    print("4. PySpark")
+    tool_choice = input("Escolha uma ferramenta: ")
+    return tool_choice
 
 def handle_option(option):
     """Executa a ação com base na escolha do usuário"""
@@ -57,7 +71,18 @@ def handle_option(option):
 
     elif option == 5:
         table_name = input("Informe o nome da tabela que deseja medir a performance: ")
-        measure_performance(table_name)
+        tool_choice = select_tool()
+        
+        if tool_choice == '1':
+            measure_performance_pandas(table_name)
+        elif tool_choice == '2':
+            measure_performance_psycopg2(table_name)
+        elif tool_choice == '3':
+            asyncio.run(measure_performance_asyncpg(table_name))
+        elif tool_choice == '4':
+            measure_performance_pyspark(table_name)
+        else:
+            print("Ferramenta inválida!")
 
     elif option == 6:
         list_tables()
@@ -73,7 +98,6 @@ def handle_option(option):
     else:
         print("Opção inválida. Por favor, tente novamente.")
 
-
 def main():
     """Executa o menu interativo"""
     while True:
@@ -83,7 +107,6 @@ def main():
             handle_option(option)
         except ValueError:
             print("Entrada inválida. Por favor, insira um número.")
-
 
 if __name__ == "__main__":
     main()
