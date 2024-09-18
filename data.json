@@ -1,6 +1,18 @@
 {
-    "sender_id": [1001, 1002, 1003, 1004],
-    "event_type": ["action", "event", "message"],
-    "timestamp": [1625097600, 1625184000, 1625270400],
-    "action_name": ["start", "stop", "pause", "resume"]
+    "sender_id": {
+        "type": "BIGINT",
+        "values": [1001, 1002, 1003, 1004]
+    },
+    "event_type": {
+        "type": "VARCHAR(50)",
+        "values": ["action", "event", "message"]
+    },
+    "timestamp": {
+        "type": "BIGINT",
+        "values": [1625097600, 1625184000, 1625270400]
+    },
+    "action_name": {
+        "type": "VARCHAR(255)",
+        "values": ["start", "stop", "pause", "resume"]
+    }
 }
