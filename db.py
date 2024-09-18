@@ -209,7 +209,11 @@ def insert_simulated_data(batch_size, total_batches, table_name):
             futures = []
             for batch_num in batch_group:
                 future = executor.submit(
-                    insert_batch, batch_num, batch_size, table_name, possible_values
+                    insert_batch,
+                    batch_num,
+                    batch_size,
+                    table_name,
+                    possible_values["values"],
                 )
                 futures.append(future)
 
