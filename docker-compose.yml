@@ -3,7 +3,7 @@ version: '3.8'
 services:
   postgres:
     image: postgres:15
-    container_name: postgres-fill-test
+    container_name: data-simulate-db
     environment:
       POSTGRES_USER: rasa
       POSTGRES_PASSWORD: rasa

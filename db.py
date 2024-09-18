@@ -1,6 +1,7 @@
 import psycopg2
 import json
 import random
+from concurrent.futures import ThreadPoolExecutor
 from faker import Faker
 
 
@@ -144,40 +145,72 @@ def count_rows_in_table(table_name):
         )
 
 
-def insert_simulated_data(batch_size, total_batches, table_name):
-    """Popula a tabela com dados simulados"""
-    fake = Faker()
+def load_data():
+    """Carrega os possíveis valores do arquivo data.json"""
+    with open("data.json") as f:
+        data = json.load(f)
+    return data
+
+
+def insert_batch(batch_num, batch_size, table_name, possible_values):
+    """Insere um lote de dados na tabela usando uma conexão separada por thread"""
     conn = get_db_connection()
     if not conn:
         print("Falha ao conectar ao banco de dados.")
         return
-
     try:
         cursor = conn.cursor()
+        columns = list(possible_values.keys())
+        columns_str = ", ".join(columns)
+        placeholders = ", ".join(["%s"] * len(columns))
+        insert_query = (
+            f"INSERT INTO {table_name} ({columns_str}) VALUES ({placeholders})"
+        )
 
-        # Atualizamos a consulta para incluir o nome da tabela dinamicamente
-        insert_query = f"""
-            INSERT INTO {table_name} (sender_id, event_type, timestamp, action_name)
-            VALUES (%s, %s, %s, %s)
-        """
+        data = []
+        for _ in range(batch_size):
+            row = []
+            for col in columns:
+                value = random.choice(possible_values[col])
+                row.append(value)
+            data.append(tuple(row))
 
-        for batch in range(total_batches):
-            data = []
-            for _ in range(batch_size):
-                sender_id = random.randint(1000000000, 9999999999)
-                event_type = "action"
-                timestamp = fake.unix_time()
-                action_name = "action_session_start"
-                data.append((sender_id, event_type, timestamp, action_name))
-
-            # Execute o batch inserindo as linhas de uma vez só
-            cursor.executemany(insert_query, data)
-            conn.commit()
-            print(f"Lote {batch + 1} de {total_batches} inserido.")
-
+        cursor.executemany(insert_query, data)
+        conn.commit()
         cursor.close()
-        print("Inserção de dados simulados concluída.")
+        print(f"Lote {batch_num} inserido.")
     except Exception as e:
-        print(f"Erro ao inserir dados simulados na tabela '{table_name}': {e}")
+        print(f"Erro ao inserir dados no lote {batch_num}: {e}")
     finally:
         conn.close()
+
+
+def insert_simulated_data(batch_size, total_batches, table_name):
+    """Popula a tabela com dados simulados usando threads, executando 8 batches por vez"""
+    possible_values = load_data()
+    max_workers = 6  # Número máximo de threads simultâneas
+
+    batches = list(range(1, total_batches + 1))
+    # Divide os batches em grupos de 8
+    batch_groups = [
+        batches[i : i + max_workers] for i in range(0, len(batches), max_workers)
+    ]
+
+    for group_num, batch_group in enumerate(batch_groups, 1):
+        print(f"Iniciando grupo {group_num} com batches: {batch_group}")
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = []
+            for batch_num in batch_group:
+                future = executor.submit(
+                    insert_batch, batch_num, batch_size, table_name, possible_values
+                )
+                futures.append(future)
+
+            # Espera todos os futures do grupo serem concluídos
+            for future in futures:
+                try:
+                    future.result()
+                except Exception as e:
+                    print(f"Erro no lote {batch_num}: {e}")
+        print(f"Grupo {group_num} concluído.")
+    print("Inserção de dados simulados concluída.")
