@@ -202,7 +202,7 @@ def insert_batch(batch_num, batch_size, table_name, possible_values):
         for _ in range(batch_size):
             row = []
             for col in columns:
-                value = random.choice(possible_values[col])
+                value = random.choice(possible_values[col]["values"])
                 row.append(value)
             data.append(tuple(row))
 
@@ -237,7 +237,7 @@ def insert_simulated_data(batch_size, total_batches, table_name):
                     batch_num,
                     batch_size,
                     table_name,
-                    possible_values["values"],
+                    possible_values,
                 )
                 futures.append(future)
 
