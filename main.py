@@ -4,7 +4,7 @@ from performance import (
     measure_performance_pandas,
     measure_performance_psycopg2,
     measure_performance_asyncpg,
-    measure_performance_pyspark
+    measure_performance_pyspark,
 )
 from db import (
     create_table,
@@ -13,8 +13,10 @@ from db import (
     delete_table,
     list_tables,
     count_rows_in_table,
+    show_table_data,
 )
 from db import load_config
+
 
 def print_menu():
     """Imprime o menu de opções"""
@@ -26,7 +28,9 @@ def print_menu():
     print("5. Medir a performance de uma tabela")
     print("6. Listar todas as tabelas disponíveis")
     print("7. Contar registros em uma tabela específica")
-    print("8. Sair")
+    print("8. Mostrar os primeiros registros de uma tabela")
+    print("9. Sair")
+
 
 def select_tool():
     """Mostra o submenu de seleção de ferramenta"""
@@ -37,6 +41,7 @@ def select_tool():
     print("4. PySpark")
     tool_choice = input("Escolha uma ferramenta: ")
     return tool_choice
+
 
 def handle_option(option):
     """Executa a ação com base na escolha do usuário"""
@@ -72,14 +77,14 @@ def handle_option(option):
     elif option == 5:
         table_name = input("Informe o nome da tabela que deseja medir a performance: ")
         tool_choice = select_tool()
-        
-        if tool_choice == '1':
+
+        if tool_choice == "1":
             measure_performance_pandas(table_name)
-        elif tool_choice == '2':
+        elif tool_choice == "2":
             measure_performance_psycopg2(table_name)
-        elif tool_choice == '3':
+        elif tool_choice == "3":
             asyncio.run(measure_performance_asyncpg(table_name))
-        elif tool_choice == '4':
+        elif tool_choice == "4":
             measure_performance_pyspark(table_name)
         else:
             print("Ferramenta inválida!")
@@ -92,11 +97,17 @@ def handle_option(option):
         count_rows_in_table(table_name)
 
     elif option == 8:
+        table_name = input("Informe o nome da tabela para exibir os registros: ")
+        limit = int(input("Informe o número de registros que deseja exibir: "))
+        show_table_data(table_name, limit)
+
+    elif option == 9:
         print("Saindo...")
         sys.exit(0)
 
     else:
         print("Opção inválida. Por favor, tente novamente.")
+
 
 def main():
     """Executa o menu interativo"""
@@ -107,6 +118,7 @@ def main():
             handle_option(option)
         except ValueError:
             print("Entrada inválida. Por favor, insira um número.")
+
 
 if __name__ == "__main__":
     main()

@@ -159,6 +159,30 @@ def count_rows_in_table(table_name):
         )
 
 
+def show_table_data(table_name, limit=10):
+    """Exibe os dados da tabela especificada"""
+    select_query = f"SELECT * FROM {table_name} LIMIT {limit};"
+
+    conn = get_db_connection()
+    if conn:
+        try:
+            cursor = conn.cursor()
+            cursor.execute(select_query)
+            rows = cursor.fetchall()
+            print(f"Exibindo os primeiros {limit} registros da tabela '{table_name}':")
+            for row in rows:
+                print(row)
+            cursor.close()
+        except Exception as e:
+            print(f"Erro ao exibir os dados da tabela '{table_name}': {e}")
+        finally:
+            conn.close()
+    else:
+        print(
+            f"Falha ao conectar ao banco de dados para exibir os dados da tabela '{table_name}'."
+        )
+
+
 def insert_batch(batch_num, batch_size, table_name, possible_values):
     """Insere um lote de dados na tabela usando uma conexão separada por thread"""
     conn = get_db_connection()
