@@ -12,6 +12,13 @@ def load_config():
     return config
 
 
+def load_data():
+    """Carrega os possíveis valores do arquivo data.json"""
+    with open("data.json") as f:
+        data = json.load(f)
+    return data
+
+
 def get_db_connection():
     """Estabelece uma conexão com o banco de dados e retorna o objeto de conexão"""
     config = load_config()
@@ -26,14 +33,21 @@ def get_db_connection():
 
 
 def create_table(table_name):
-    """Cria uma tabela no banco de dados com o nome fornecido"""
+    """Cria uma tabela no banco de dados com colunas baseadas no JSON"""
+    possible_values = load_data()
+
+    # Monta a definição das colunas
+    columns_definitions = []
+    for column_name, column_info in possible_values.items():
+        column_type = column_info["type"]
+        columns_definitions.append(f"{column_name} {column_type}")
+
+    # Adiciona a coluna 'id' como chave primária
+    columns_sql = ",\n    ".join(["id SERIAL PRIMARY KEY"] + columns_definitions)
+
     create_table_query = f"""
     CREATE TABLE IF NOT EXISTS {table_name} (
-        id SERIAL PRIMARY KEY,
-        sender_id BIGINT NOT NULL,
-        event_type VARCHAR(50),
-        timestamp BIGINT,
-        action_name VARCHAR(255)
+        {columns_sql}
     );
     """
     conn = get_db_connection()
@@ -143,13 +157,6 @@ def count_rows_in_table(table_name):
         print(
             f"Falha ao conectar ao banco de dados para contar dados na tabela '{table_name}'."
         )
-
-
-def load_data():
-    """Carrega os possíveis valores do arquivo data.json"""
-    with open("data.json") as f:
-        data = json.load(f)
-    return data
 
 
 def insert_batch(batch_num, batch_size, table_name, possible_values):

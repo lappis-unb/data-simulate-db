@@ -1,13 +1,13 @@
 {
   "db_config": {
-    "dbname": "rasa",
+    "dbname": "dbrasa",
     "user": "rasa",
     "password": "rasa",
-    "host": "172.26.0.2",
+    "host": "172.29.0.2",
     "port": "5432"
   },
   "simulation_config": {
-    "batch_size": 100000,
+    "batch_size": 10000,
     "total_batches": 30
   },
   "analysis_config": {
